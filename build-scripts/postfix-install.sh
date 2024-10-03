@@ -23,11 +23,11 @@ do_ubuntu() {
     echo "Europe/Berlin" > /etc/timezone
     apt-get update -y -q
     apt-get install -y libsasl2-modules sasl2-bin
-    apt-get install -y postfix postfix-pcre postfix-ldap
+    apt-get install -y postfix postfix-pcre postfix-ldap postfix-pgsql
     apt-get install -y opendkim
     apt-get install -y ca-certificates tzdata supervisor rsyslog bash opendkim-tools curl libcurl4 libjsoncpp25 sasl2-bin postfix-lmdb procps logrotate cron net-tools ${RELEASE_SPECIFIC_PACKAGES}
     apt-get clean
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*    
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 }
 
 if [ -f /etc/alpine-release ]; then
