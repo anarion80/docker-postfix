@@ -214,78 +214,78 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
 
-  Release:
-    runs-on: ubuntu-latest
-    needs:
-      - Unit_Tests
-      # - Integration_Tests
-      # - Helm_chart_Tests
-      - Build_Alpine
-      - Build_Ubuntu
-      - Build_Debian
+  # Release:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - Unit_Tests
+  #     # - Integration_Tests
+  #     # - Helm_chart_Tests
+  #     - Build_Alpine
+  #     - Build_Ubuntu
+  #     - Build_Debian
 
-    steps:
-      # Checkout
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  #   steps:
+  #     # Checkout
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      # Release version setup
-      - name: version_number
-        uses: ./.github/actions/get-release-version
+  #     # Release version setup
+  #     - name: version_number
+  #       uses: ./.github/actions/get-release-version
 
-      - name: Checkout gh-pages
-        uses: actions/checkout@v4
-        with:
-          ref: "gh-pages"
-          path: "gh-pages"
-          fetch-depth: 1
+  #     - name: Checkout gh-pages
+  #       uses: actions/checkout@v4
+  #       with:
+  #         ref: "gh-pages"
+  #         path: "gh-pages"
+  #         fetch-depth: 1
 
-      - name: Copy `README.md` and `LICENCE` into the helm chart
-        id: readme_and_licence
-        shell: bash
-        run: cp README.md LICENSE helm/mail/
+  #     - name: Copy `README.md` and `LICENCE` into the helm chart
+  #       id: readme_and_licence
+  #       shell: bash
+  #       run: cp README.md LICENSE helm/mail/
 
-      - name: Changelog
-        uses: Bullrich/generate-release-changelog@master
-        id: Changelog
-        env:
-          REPO: ${{ github.repository }}
-      # TODO: Include the changelog in Chart.yml as annotations.artifacthub.io/changes
-      # See more here: https://artifacthub.io/docs/topics/annotations/helm/#supported-annotations
+  #     - name: Changelog
+  #       uses: Bullrich/generate-release-changelog@master
+  #       id: Changelog
+  #       env:
+  #         REPO: ${{ github.repository }}
+  #     # TODO: Include the changelog in Chart.yml as annotations.artifacthub.io/changes
+  #     # See more here: https://artifacthub.io/docs/topics/annotations/helm/#supported-annotations
 
-      - name: Package helm chart with vX.Y.Z
-        uses: WyriHaximus/github-action-helm3@v4
-        with:
-          exec: helm package --app-version $RELEASE_VERSION --version "${RELEASE_VERSION}" --destination ./gh-pages helm/mail
+  #     - name: Package helm chart with vX.Y.Z
+  #       uses: WyriHaximus/github-action-helm3@v4
+  #       with:
+  #         exec: helm package --app-version $RELEASE_VERSION --version "${RELEASE_VERSION}" --destination ./gh-pages helm/mail
 
-      - name: Package helm chart with X.Y.Z
-        uses: WyriHaximus/github-action-helm3@v4
-        with:
-          exec: helm package --app-version "${RELEASE_VERSION_NO_v}" --version "${RELEASE_VERSION_NO_v}" --destination ./gh-pages helm/mail
+  #     - name: Package helm chart with X.Y.Z
+  #       uses: WyriHaximus/github-action-helm3@v4
+  #       with:
+  #         exec: helm package --app-version "${RELEASE_VERSION_NO_v}" --version "${RELEASE_VERSION_NO_v}" --destination ./gh-pages helm/mail
 
-      - name: Create helm chart index
-        uses: WyriHaximus/github-action-helm3@v4
-        with:
-          exec: cd gh-pages && rm -rf .git && helm repo index . --url https://anarionsan.github.io/docker-postfix
+  #     - name: Create helm chart index
+  #       uses: WyriHaximus/github-action-helm3@v4
+  #       with:
+  #         exec: cd gh-pages && rm -rf .git && helm repo index . --url https://anarionsan.github.io/docker-postfix
 
-      - name: Upload gh-pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages
-          tag_name: gh-pages-${{ env.RELEASE_VERSION }}
+  #     - name: Upload gh-pages
+  #       uses: peaceiris/actions-gh-pages@v4
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         publish_dir: ./gh-pages
+  #         tag_name: gh-pages-${{ env.RELEASE_VERSION }}
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            ${{ steps.Changelog.outputs.changelog }}
-          draft: false
-          prerelease: false
+  #     - name: Create Release
+  #       id: create_release
+  #       uses: actions/create-release@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+  #       with:
+  #         tag_name: ${{ github.ref }}
+  #         release_name: Release ${{ github.ref }}
+  #         body: |
+  #           ${{ steps.Changelog.outputs.changelog }}
+  #         draft: false
+  #         prerelease: false
