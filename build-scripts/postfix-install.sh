@@ -8,7 +8,7 @@ fi
 do_alpine() {
     apk update
     apk add --upgrade cyrus-sasl cyrus-sasl-static cyrus-sasl-digestmd5 cyrus-sasl-crammd5 cyrus-sasl-login cyrus-sasl-ntlm libsasl
-    apk add postfix postfix-pcre postfix-ldap
+    apk add postfix postfix-pcre postfix-ldap postfix-pgsql
     apk add opendkim
     apk add --upgrade ca-certificates tzdata supervisor rsyslog musl musl-utils bash opendkim-utils libcurl jsoncpp lmdb logrotate netcat-openbsd
 }
