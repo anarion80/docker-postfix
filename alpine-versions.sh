@@ -10,7 +10,7 @@ fi
 docker login
 
 # build, tag, and push alpine versions supplied as script arguments
-base_repo=boky/postfix
+base_repo=anarion/postfix
 for alpine_version in "$@"; do
   $(dirname $0)/build.sh -t "$base_repo" --build-arg=BASE_IMAGE="alpine:$alpine_version"
 done

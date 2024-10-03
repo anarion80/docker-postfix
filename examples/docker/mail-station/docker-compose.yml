@@ -70,7 +70,7 @@ services:
       - ./certs:/etc/letsencrypt # Certificates used by dovecot
 
   postfix: # The MTA
-    image: boky/postfix
+    image: anarion/postfix
     container_name: postfix
     deploy:
       resources:

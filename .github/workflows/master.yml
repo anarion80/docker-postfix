@@ -3,6 +3,7 @@ name: Docker image
 on:
   push:
     branches: [ 'master' ]
+  workflow_dispatch:
 
 jobs:
   Unit_Tests:
@@ -14,49 +15,49 @@ jobs:
 
       - uses: ./.github/actions/unit-tests
 
-  Integration_Tests:
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout
-      - name: Checkout
-        uses: actions/checkout@v4
+  # Integration_Tests:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     # Checkout
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - uses: ./.github/actions/integration-tests
-        with:
-          XOAUTH2_RELAYHOST_USERNAME: ${{ secrets.XOAUTH2_RELAYHOST_USERNAME }}
-          XOAUTH2_CLIENT_ID: ${{ secrets.XOAUTH2_CLIENT_ID }}
-          XOAUTH2_SECRET: ${{ secrets.XOAUTH2_SECRET }}
-          XOAUTH2_INITIAL_REFRESH_TOKEN: ${{ secrets.XOAUTH2_INITIAL_REFRESH_TOKEN }}
+  #     - uses: ./.github/actions/integration-tests
+  #       with:
+  #         XOAUTH2_RELAYHOST_USERNAME: ${{ secrets.XOAUTH2_RELAYHOST_USERNAME }}
+  #         XOAUTH2_CLIENT_ID: ${{ secrets.XOAUTH2_CLIENT_ID }}
+  #         XOAUTH2_SECRET: ${{ secrets.XOAUTH2_SECRET }}
+  #         XOAUTH2_INITIAL_REFRESH_TOKEN: ${{ secrets.XOAUTH2_INITIAL_REFRESH_TOKEN }}
 
-  Helm_chart_Tests:
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout
-      - name: Checkout
-        uses: actions/checkout@v4
+  # Helm_chart_Tests:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     # Checkout
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - uses: ./.github/actions/helm-chart-tests
+  #     - uses: ./.github/actions/helm-chart-tests
 
-  Build_PostfixExporter:
-    runs-on: ubuntu-latest
-    needs:
-      - Helm_chart_Tests
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # Build_PostfixExporter:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - Helm_chart_Tests
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - uses: ./.github/actions/build-postfix-exporter
-        with:
-          DOCKER_ACCESS_TOKEN: '${{ secrets.DOCKER_ACCESS_TOKEN }}'
-          tags: |
-            boky/postfix-exporter:latest
-            boky/postfix-exporter:edge
+  #     - uses: ./.github/actions/build-postfix-exporter
+  #       with:
+  #         DOCKER_ACCESS_TOKEN: '${{ secrets.DOCKER_ACCESS_TOKEN }}'
+  #         tags: |
+  #           anarion/postfix-exporter:latest
+  #           anarion/postfix-exporter:edge
 
   Build_Alpine:
     runs-on: ubuntu-latest
     needs:
       - Unit_Tests
-      - Integration_Tests
+      # - Integration_Tests
     steps:
       # Checkout
       - name: Checkout
@@ -89,8 +90,8 @@ jobs:
           context: .
           push: true
           tags: |
-            boky/postfix:edge
-            boky/postfix:edge-alpine
+            anarion/postfix:edge
+            anarion/postfix:edge-alpine
           # linux/s390x: "rsyslog (no such package)"
           # Latest Alpine does not have all the packages for 386 anymore. :-(
           platforms: "linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/amd64,linux/arm64"
@@ -108,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - Unit_Tests
-      - Integration_Tests
+      # - Integration_Tests
     steps:
       # Checkout
       - name: Checkout
@@ -136,7 +137,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: boky/postfix:edge-ubuntu
+          tags: anarion/postfix:edge-ubuntu
           platforms: "linux/arm/v7,linux/amd64,linux/arm64,linux/ppc64le,linux/s390x"
           cache-from: type=local,src=/tmp/.buildx-cache/ubuntu,mode=max,compression=estargz
           cache-to: type=local,dest=/tmp/.buildx-cache-new/ubuntu
@@ -152,7 +153,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - Unit_Tests
-      - Integration_Tests
+      # - Integration_Tests
     steps:
       # Checkout
       - name: Checkout
@@ -180,7 +181,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: boky/postfix:edge-debian
+          tags: anarion/postfix:edge-debian
           platforms: "linux/386,linux/arm/v5,linux/arm/v7,linux/arm64/v8,linux/amd64,linux/arm64,linux/mips64le,linux/ppc64le,linux/s390x"
           cache-from: type=local,src=/tmp/.buildx-cache/debian,mode=max,compression=estargz
           cache-to: type=local,dest=/tmp/.buildx-cache-new/debian
@@ -191,4 +192,3 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-

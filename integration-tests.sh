@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-./build.sh --load --tag boky/postfix
+./build.sh --load --tag anarion/postfix
 cd integration-tests
 
 FIND="$(which find)"

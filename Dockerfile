@@ -47,7 +47,7 @@ RUN        --mount=type=cache,target=/var/cache/apt,sharing=locked,id=var-cache-
 
 # ============================ Prepare main image ============================
 FROM sasl
-LABEL maintainer="Bojan Cekrlic - https://github.com/bokysan/docker-postfix/"
+LABEL maintainer="Anarion Dunedain - https://github.com/anarion80/docker-postfix/"
 
 # Set up configuration
 COPY       /configs/supervisord.conf     /etc/supervisord.conf
